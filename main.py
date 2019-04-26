@@ -1,4 +1,11 @@
 import speech_recognition as sr
+import pygame as pg
+from gtts import gTTS
+import requests
+import sys
+import webbrowser
+import bs4
+from requests import get
 
 r = sr.Recognizer()
 speech_result = ''
@@ -12,12 +19,10 @@ try:
 except Exception:
     print("Something went wrong")
 
-import requests, sys, webbrowser, bs4
 
 link_number = 0
 working = False
 
-from requests import get
 
 while not working:
     res = requests.get('https://google.com/search?q='+speech_result)
@@ -25,7 +30,7 @@ while not working:
     soup = bs4.BeautifulSoup(res.text,'html5lib')
     linktoscrape = soup.select('.r a')[link_number].get("href")[7:].split('&sa=U&ved=0')[0]
 
-    content  = get('http://api.smmry.com/&SM_API_KEY=B2A2EEA4A2&SM_URL=' + linktoscrape).json()
+    content = get('http://api.smmry.com/&SM_API_KEY=B2A2EEA4A2&SM_URL=' + linktoscrape).json()
     print(content)
 
     try:
@@ -39,24 +44,24 @@ while not working:
 
     print(content)
 
-from gtts import gTTS
 
-speech=gTTS(content)
+speech = gTTS(content)
 
 speech.save("happy.mp3")
 
-import pygame as pg
+
 def play_music(music_file, volume=0.8):
     '''
     stream music with mixer.music module in a blocking manner
     this will stream the sound from disk while playing
     '''
+    
     # set up the mixer
     freq = 30000     # audio CD quality
-    bitsize = -16    # unsigned 16 bit
+    bit_size = -16    # unsigned 16 bit
     channels = 2     # 1 is mono, 2 is stereo
     buffer = 2048    # number of samples (experiment to get best sound)
-    pg.mixer.init(freq, bitsize, channels, buffer)
+    pg.mixer.init(freq, bit_size, channels, buffer)
     # volume value 0.0 to 1.0
     pg.mixer.music.set_volume(volume)
     clock = pg.time.Clock()
@@ -73,10 +78,9 @@ def play_music(music_file, volume=0.8):
 # pick a MP3 music file you have in the working folder
 # otherwise give the full file path
 # (try other sound file formats too)
+
+
 music_file = "happy.mp3"
 # optional volume 0 to 1.0
 volume = 0.8
 play_music(music_file, volume)
-
-
-
